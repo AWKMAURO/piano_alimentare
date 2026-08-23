@@ -10,5 +10,9 @@ Le alternative del documento originale sono mantenute esplicite. L'app non modif
 
 La sezione Diario registra gli alimenti consumati per giorno e pasto. Le calorie sono calcolate da quantità e kcal per 100 g/ml. L'obiettivo giornaliero è facoltativo; alimenti, valori e impostazioni restano locali e possono essere esportati o importati tramite backup JSON.
 
-La ricerca per nome e marca recupera online le kcal per 100 g/ml da Open Food Facts. I risultati scelti e le ricerche recenti vengono conservati sul dispositivo per ridurre le richieste e restare riutilizzabili offline. I dati esterni possono essere incompleti: l'etichetta del prodotto resta il riferimento da controllare.
+La ricerca gratuita per nome e marca recupera le kcal per 100 g/ml da Open Food Facts. La ricerca intelligente opzionale usa un backend Cloudflare Worker protetto per interrogare OpenAI con ricerca web e mostra soltanto risultati collegati a una fonte consultabile. Entrambi i tipi di risultato vengono conservati sul dispositivo per ridurre le richieste.
+
+La chiave API OpenAI non viene mai inserita nel browser o nel repository. Il Worker la legge da un secret e accetta le richieste soltanto dall'origine GitHub Pages e con un secondo codice privato dell'app. La cartella `worker/` contiene backend, configurazione e test.
+
+I valori esterni possono essere incompleti o non corrispondere esattamente al prodotto consumato: l'etichetta resta il riferimento da controllare.
 
