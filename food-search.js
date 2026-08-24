@@ -11,9 +11,10 @@
   const AI_TIMEOUT=35000;
   const foodInput=document.getElementById('diaryFood');
   const kcalInput=document.getElementById('diaryKcal100');
+  const unitInput=document.getElementById('diaryUnit');
   const diaryDialog=document.getElementById('diaryDialog');
   const infoDialog=document.getElementById('infoDialog');
-  if(!foodInput||!kcalInput||!diaryDialog||!infoDialog)return;
+  if(!foodInput||!kcalInput||!unitInput||!diaryDialog||!infoDialog)return;
 
   const panel=document.createElement('section');
   panel.className='food-search-box';
@@ -160,6 +161,9 @@
   function selectProduct(product){
     selectedLabel=diaryLabel(product);
     foodInput.value=selectedLabel;
+    unitInput.value=product.unit==='ml'?'ml':'g';
+    unitInput.dataset.previousUnit=unitInput.value;
+    if(typeof updateDiaryUnitInterface==='function')updateDiaryUnitInterface();
     kcalInput.value=String(product.kcalPer100).replace('.',',');
     if(typeof calculateEntryCalories==='function')calculateEntryCalories();
     results.hidden=true;
@@ -168,7 +172,7 @@
     const confirmation=document.createElement('span');
     confirmation.textContent=product.provider==='openai_web'
       ?`Stima web: ${product.kcalPer100.toLocaleString('it-IT')} kcal per 100 ${product.unit}`
-      :`✓ ${product.kcalPer100.toLocaleString('it-IT')} kcal per 100 g/ml inserite`;
+      :`✓ ${product.kcalPer100.toLocaleString('it-IT')} kcal per 100 ${product.unit} inserite`;
     selected.append(confirmation);
     const verifyUrl=product.provider==='openai_web'?product.sourceUrl:(product.code?`https://it.openfoodfacts.org/product/${encodeURIComponent(product.code)}`:'');
     if(verifyUrl){
@@ -208,7 +212,7 @@
     const kcal=document.createElement('strong');
     kcal.textContent=product.kcalPer100.toLocaleString('it-IT');
     const unit=document.createElement('small');
-    unit.textContent=`kcal / 100 ${product.provider==='openai_web'?product.unit:'g/ml'}`;
+    unit.textContent=`kcal / 100 ${product.unit}`;
     nutrition.append(kcal,unit);
     row.append(description,nutrition);
     row.addEventListener('click',()=>selectProduct(product));
@@ -486,6 +490,12 @@
     if(results.dataset.query&&queryKey(foodInput.value)!==results.dataset.query)results.hidden=true;
     aiButton.classList.remove('suggested');
   });
+  unitInput.addEventListener('change',()=>{
+    if(!selectedLabel)return;
+    clearSelection();
+    results.hidden=true;
+    showStatus('Unità cambiata. Inserisci o scegli il valore calorico corretto.','warning');
+  });
   diaryDialog.addEventListener('close',()=>{
     requestId++;
     activeController?.abort();
@@ -521,4 +531,6 @@
 
   updateAiConfigurationUi();
 })();
+
+
 
