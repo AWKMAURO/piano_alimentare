@@ -1,0 +1,60 @@
+/* iPhone interaction and contrast refinements */
+body {
+  --muted: #5f6b65;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+nav {
+  z-index: 20;
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.round,
+.date-head button,
+.primary,
+.shopping-actions button,
+.ai-config-summary button,
+.ai-config-test,
+.delete-entry {
+  min-height: 44px;
+}
+
+.round,
+.date-head button {
+  min-width: 44px;
+}
+
+#diaryDialog .dialog-head,
+#openAiConfigDialog .dialog-head {
+  position: sticky;
+  top: -1px;
+  z-index: 2;
+  padding-bottom: 8px;
+  background: var(--card);
+}
+
+@media (max-width: 520px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  .online-food-results {
+    max-height: min(28dvh, 220px);
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-height: 620px) {
+  .online-food-results {
+    max-height: 140px;
+  }
+}
+
