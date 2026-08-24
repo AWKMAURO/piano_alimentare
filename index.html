@@ -1,9 +1,115 @@
-<!doctype html><html lang="it"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#f5f1e8"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Il mio piano"><title>Il mio piano</title><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icon.svg"><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="diary.css"><link rel="stylesheet" href="diary-backup.css"><link rel="stylesheet" href="food-search.css"></head><body>
-<div class="shell"><header><div><p class="eyebrow">PIANO ALIMENTARE</p><h1>Il mio piano</h1></div><button class="round" id="settingsButton" aria-label="Informazioni">i</button></header><main>
-<section class="page active" data-page="today"><div class="date-head"><button id="previousDay">‹</button><div><p id="fullDate"></p><h2 id="dayName"></h2></div><button id="nextDay">›</button></div><section class="hero"><p>OGGI</p><h2>Cosa mangiare</h2><div id="todayMeals"></div></section><section class="tomorrow-card"><div class="section-title"><div><p class="eyebrow">PREPARA IN ANTICIPO</p><h2 id="tomorrowTitle">Per domani</h2></div><span>→</span></div><div id="tomorrowMeals"></div></section><aside class="daily-note">💧 Frutta: 150–200 g a porzione · Olio EVO: 3 cucchiai al giorno</aside></section>
-<section class="page" data-page="week"><div class="page-heading"><p class="eyebrow">SETTE GIORNI</p><h2>La tua settimana</h2><p>Tocca un giorno per vedere tutti i pasti.</p></div><div id="weekList"></div></section>
-<section class="page" data-page="shopping"><div class="page-heading"><p class="eyebrow">LISTA SETTIMANALE</p><h2>Lista della spesa</h2><p id="shoppingProgress"></p></div><div class="shopping-actions"><button id="hideChecked">Nascondi presi</button><button id="resetShopping">Ripristina</button></div><div id="shoppingList"></div><form id="addItemForm"><input id="newItem" maxlength="60" placeholder="Aggiungi un prodotto"><button>+</button></form></section>
-</main></div><nav><button class="active" data-nav="today"><span>⌂</span>Oggi</button><button data-nav="week"><span>▦</span>Settimana</button><button data-nav="shopping"><span>✓</span>Spesa</button></nav>
-<dialog id="infoDialog"><div class="dialog-card"><div class="dialog-head"><h2>Informazioni</h2><button id="closeInfo">×</button></div><p>Questa app riporta fedelmente il piano alimentare caricato. Non sostituisce le indicazioni della professionista che lo ha preparato.</p><p>I dati del diario e la lista della spesa restano su questo dispositivo. La ricerca gratuita invia a Open Food Facts soltanto il testo cercato. La ricerca intelligente, solo quando la scegli, invia lo stesso testo al nostro backend protetto e a OpenAI: non vengono inviati pasti, quantità, date o obiettivo calorico.</p><button class="primary" id="exportShopping">Esporta lista</button></div></dialog>
-<script src="app.js"></script><script src="diary.js"></script><script src="diary-backup.js"></script><script src="food-search.js"></script><script>if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js')</script></body></html>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f5f1e8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Il mio piano">
+  <title>Il mio piano</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="diary.css">
+  <link rel="stylesheet" href="diary-backup.css">
+  <link rel="stylesheet" href="food-search.css">
+  <link rel="stylesheet" href="mobile-v5.css">
+  <link rel="stylesheet" href="mobile-v6.css">
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">PIANO ALIMENTARE</p>
+        <h1>Il mio piano</h1>
+      </div>
+      <button class="round" id="settingsButton" aria-label="Informazioni">i</button>
+    </header>
+
+    <main>
+      <section class="page active" data-page="today">
+        <div class="date-head">
+          <button id="previousDay" aria-label="Giorno precedente">â€¹</button>
+          <div>
+            <p id="fullDate"></p>
+            <h2 id="dayName"></h2>
+          </div>
+          <button id="nextDay" aria-label="Giorno successivo">â€º</button>
+        </div>
+
+        <section class="hero">
+          <p>OGGI</p>
+          <h2>Cosa mangiare</h2>
+          <div id="todayMeals"></div>
+        </section>
+
+        <section class="tomorrow-card">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">PREPARA IN ANTICIPO</p>
+              <h2 id="tomorrowTitle">Per domani</h2>
+            </div>
+            <span>â†’</span>
+          </div>
+          <div id="tomorrowMeals"></div>
+        </section>
+
+        <aside class="daily-note">ðŸ’§ Frutta: 150â€“200 g a porzione Â· Olio EVO: 3 cucchiai al giorno</aside>
+      </section>
+
+      <section class="page" data-page="week">
+        <div class="page-heading">
+          <p class="eyebrow">SETTE GIORNI</p>
+          <h2>La tua settimana</h2>
+          <p>Tocca un giorno per vedere tutti i pasti.</p>
+        </div>
+        <div id="weekList"></div>
+      </section>
+
+      <section class="page" data-page="shopping">
+        <div class="page-heading">
+          <p class="eyebrow">LISTA SETTIMANALE</p>
+          <h2>Lista della spesa</h2>
+          <p id="shoppingProgress"></p>
+        </div>
+        <div class="shopping-actions">
+          <button id="hideChecked">Nascondi presi</button>
+          <button id="resetShopping">Ripristina</button>
+        </div>
+        <div id="shoppingList"></div>
+        <form id="addItemForm">
+          <input id="newItem" maxlength="60" placeholder="Aggiungi un prodotto">
+          <button aria-label="Aggiungi prodotto">+</button>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <nav aria-label="Sezioni principali">
+    <button class="active" data-nav="today"><span aria-hidden="true">âŒ‚</span>Oggi</button>
+    <button data-nav="week"><span aria-hidden="true">â—¦</span>Settimana</button>
+    <button data-nav="shopping"><span aria-hidden="true">âœ“</span>Spesa</button>
+  </nav>
+
+  <dialog id="infoDialog">
+    <div class="dialog-card">
+      <div class="dialog-head">
+        <h2>Informazioni</h2>
+        <button id="closeInfo" aria-label="Chiudi">Ã—</button>
+      </div>
+      <p>Questa app riporta fedelmente il piano alimentare caricato. Non sostituisce le indicazioni della professionista che lo ha preparato.</p>
+      <p>I dati del diario e la lista della spesa restano su questo dispositivo. La ricerca gratuita invia a Open Food Facts soltanto il testo cercato. La ricerca intelligente, solo quando la scegli, invia lo stesso testo al nostro backend protetto e a OpenAI: non vengono inviati pasti, quantitÃ , date o obiettivo calorico.</p>
+      <button class="primary" id="exportShopping">Esporta lista</button>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+  <script src="diary.js"></script>
+  <script src="diary-backup.js"></script>
+  <script src="food-search.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js');
+  </script>
+</body>
+</html>
 
