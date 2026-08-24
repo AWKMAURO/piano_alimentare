@@ -1,0 +1,505 @@
+/* Mobile readability and overflow fixes */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.shell,
+main,
+.page,
+.hero,
+.tomorrow-card,
+#todayMeals,
+#tomorrowMeals,
+.meal,
+.meal > div,
+.day-card,
+.day-details {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.meal {
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 13px;
+  padding: 16px 0;
+}
+
+.meal-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  font-size: 1.3rem;
+}
+
+.meal h3 {
+  font-size: .95rem;
+  line-height: 1.3;
+}
+
+.meal p {
+  margin-top: 5px;
+  font-size: .86rem;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.day-button {
+  min-height: 54px;
+  gap: 12px;
+}
+
+.day-button strong,
+.day-button span {
+  min-width: 0;
+}
+
+.day-button span {
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.shop-item {
+  min-height: 52px;
+}
+
+.shop-item span {
+  min-width: 0;
+  font-size: .9rem;
+  overflow-wrap: anywhere;
+}
+
+.shopping-actions {
+  flex-wrap: wrap;
+}
+
+#addItemForm input {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+#addItemForm button {
+  min-height: 48px;
+}
+
+nav {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 100%;
+  overflow: hidden;
+}
+
+nav button {
+  min-width: 0;
+  min-height: 50px;
+  padding: 5px 2px;
+  overflow: hidden;
+  line-height: 1.15;
+  white-space: normal;
+}
+
+nav button span {
+  line-height: 1;
+}
+
+dialog {
+  max-width: calc(100vw - 24px);
+  margin: auto;
+  overflow: hidden;
+}
+
+.dialog-card,
+.dialog-head,
+.dialog-head > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dialog-head {
+  gap: 12px;
+}
+
+.dialog-head button {
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+/* Diary */
+.calorie-meta {
+  min-width: 0;
+}
+
+.calorie-meta span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.diary-meal,
+.diary-meal-head,
+.diary-entry,
+.diary-entry > span {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.diary-entry {
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  min-height: 54px;
+}
+
+.diary-entry strong {
+  font-size: .9rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.diary-entry small {
+  font-size: .76rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.diary-entry > span:last-child {
+  max-width: 92px;
+  text-align: right;
+  white-space: normal;
+}
+
+.field-grid {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.field,
+.field input,
+.field select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.field input,
+.field select {
+  min-height: 48px;
+  font-size: 16px;
+}
+
+.calorie-preview {
+  gap: 12px;
+  min-height: 54px;
+}
+
+/* Food search */
+.food-search-box,
+.food-search-actions,
+.online-food-results,
+.online-food-result,
+.online-food-result > span {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.food-search-button,
+.food-ai-button {
+  min-width: 0;
+  font-size: .8rem;
+  line-height: 1.25;
+  white-space: normal;
+}
+
+.food-search-status {
+  font-size: .74rem;
+  line-height: 1.5;
+}
+
+.online-food-result > span:first-child strong {
+  font-size: .84rem;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.online-food-result small {
+  font-size: .71rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.online-selected-food {
+  font-size: .74rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.food-search-source {
+  font-size: .68rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+  .shell {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  h1 {
+    font-size: 1.75rem;
+  }
+
+  .date-head {
+    grid-template-columns: 48px minmax(0, 1fr) 48px;
+    margin: 22px 0 16px;
+  }
+
+  .date-head button {
+    min-width: 48px;
+    min-height: 48px;
+  }
+
+  .date-head h2 {
+    font-size: 1.45rem;
+  }
+
+  .date-head p {
+    font-size: .8rem;
+  }
+
+  .hero {
+    padding: 21px;
+    border-radius: 24px;
+  }
+
+  .hero > h2 {
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+  }
+
+  .tomorrow-card {
+    padding: 19px;
+    border-radius: 22px;
+  }
+
+  .daily-note {
+    padding: 15px;
+    font-size: .82rem;
+    line-height: 1.55;
+  }
+
+  .page-heading > p:last-child {
+    font-size: .88rem;
+    line-height: 1.5;
+  }
+
+  .shopping-actions button {
+    min-height: 42px;
+    padding: 10px 13px;
+    font-size: .76rem;
+  }
+
+  nav {
+    padding-top: 7px;
+  }
+
+  nav button {
+    font-size: .7rem;
+  }
+
+  nav button span {
+    margin-bottom: 4px;
+    font-size: 1.25rem;
+  }
+
+  dialog {
+    width: calc(100% - 24px);
+    border-radius: 22px;
+  }
+
+  .dialog-card {
+    padding: 20px 18px;
+  }
+
+  .dialog-card > p {
+    font-size: .88rem;
+  }
+
+  .calorie-summary {
+    padding: 21px 19px;
+    border-radius: 23px;
+  }
+
+  .calorie-summary > strong {
+    font-size: 2rem;
+  }
+
+  .calorie-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 5px;
+    font-size: .8rem;
+    line-height: 1.4;
+  }
+
+  .calorie-summary button {
+    min-height: 44px;
+    font-size: .8rem;
+  }
+
+  .diary-meal {
+    padding: 18px 16px;
+  }
+
+  .diary-meal-head {
+    gap: 10px;
+    margin-bottom: 9px;
+  }
+
+  .diary-meal-head h3 {
+    font-size: 1rem;
+  }
+
+  .diary-meal-head span {
+    font-size: .78rem;
+    text-align: right;
+  }
+
+  .empty-meal {
+    padding: 11px 0;
+    font-size: .82rem;
+  }
+
+  .diary-add {
+    min-height: 50px;
+    font-size: .92rem;
+  }
+
+  .diary-disclaimer {
+    font-size: .78rem;
+    line-height: 1.55;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .field {
+    margin-top: 16px;
+  }
+
+  .field > span {
+    font-size: .78rem;
+  }
+
+  .calorie-preview {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+    padding: 14px;
+  }
+
+  .calorie-preview span {
+    font-size: .78rem;
+  }
+
+  #diaryDialog,
+  #goalDialog {
+    max-height: calc(100dvh - 24px);
+  }
+
+  #diaryDialog .dialog-card,
+  #goalDialog .dialog-card {
+    max-height: calc(100dvh - 24px);
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
+  #diaryDialog .primary,
+  #goalDialog .primary {
+    min-height: 50px;
+    font-size: .9rem;
+  }
+
+  .food-search-box {
+    margin-top: 13px;
+    padding: 13px;
+  }
+
+  .food-search-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .food-search-button,
+  .food-ai-button {
+    min-height: 48px;
+    padding: 11px 10px;
+  }
+
+  .online-food-results {
+    max-height: 42dvh;
+  }
+
+  .online-food-result {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    min-height: 54px;
+    padding: 13px 2px;
+  }
+
+  .online-food-result > span:last-child {
+    text-align: left;
+  }
+
+  .online-selected-food,
+  .ai-config-summary {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .online-selected-food {
+    padding: 11px;
+  }
+
+  .ai-config-summary button {
+    width: 100%;
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 360px) {
+  .shell {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+
+  .hero,
+  .tomorrow-card {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .meal {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .meal-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  nav button {
+    font-size: .64rem;
+  }
+
+  .diary-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .diary-entry > span:last-child {
+    max-width: none;
+    text-align: left;
+  }
+}
+
