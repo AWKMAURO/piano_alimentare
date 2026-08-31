@@ -1,6 +1,7 @@
 const DIARY_KEY='piano-alimentare-diario-v1';
 const FOODS_KEY='piano-alimentare-alimenti-v1';
 const DIARY_SETTINGS_KEY='piano-alimentare-diario-impostazioni-v1';
+const ACTIVE_CALORIES_KEY='piano-alimentare-calorie-attive-v1';
 const DIARY_MEALS=['Colazione','Spuntino mattina','Pranzo','Spuntino pomeriggio','Cena','Extra'];
 const DIARY_UNITS={
   g:{label:'Grammi (g)',singular:'g',plural:'g',reference:100,quantityPlaceholder:'Es. 150'},
@@ -18,6 +19,7 @@ let diaryOffset=0;
 let diaryEntries=readLocal(DIARY_KEY,[]);
 let foodCatalog=readLocal(FOODS_KEY,[]);
 let diarySettings=readLocal(DIARY_SETTINGS_KEY,{calorieGoal:null});
+let activeCaloriesByDate=readLocal(ACTIVE_CALORIES_KEY,{});
 
 function readLocal(key,fallback){
   try{
@@ -51,10 +53,33 @@ function normalizeCatalogItem(raw){
   return{...raw,name:raw.name.trim(),unit,kcalRate,kcalValue:kcalRate};
 }
 
+function normalizeActiveCaloriesData(){
+  const source=activeCaloriesByDate&&typeof activeCaloriesByDate==='object'&&!Array.isArray(activeCaloriesByDate)?activeCaloriesByDate:{};
+  const normalized={};
+  for(const [date,raw] of Object.entries(source)){
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(date))continue;
+    const calories=Number(raw&&typeof raw==='object'?raw.calories:raw);
+    if(!Number.isFinite(calories)||calories<=0)continue;
+    const updatedAt=Number(raw&&typeof raw==='object'?raw.updatedAt:0);
+    normalized[date]={
+      calories:Math.round(calories*10)/10,
+      updatedAt:Number.isFinite(updatedAt)&&updatedAt>0?updatedAt:Date.now(),
+      source:raw&&typeof raw==='object'&&raw.source==='healthkit'?'healthkit':'manual'
+    };
+  }
+  activeCaloriesByDate=normalized;
+}
+
+function activeCaloriesForDate(dateKey){
+  const calories=Number(activeCaloriesByDate?.[dateKey]?.calories??activeCaloriesByDate?.[dateKey]);
+  return Number.isFinite(calories)&&calories>0?Math.round(calories*10)/10:0;
+}
+
 function normalizeDiaryData(){
   diaryEntries=(Array.isArray(diaryEntries)?diaryEntries:[]).map(normalizeDiaryEntry).filter(Boolean);
   foodCatalog=(Array.isArray(foodCatalog)?foodCatalog:[]).map(normalizeCatalogItem).filter(Boolean);
   if(!diarySettings||typeof diarySettings!=='object'||Array.isArray(diarySettings))diarySettings={calorieGoal:null};
+  normalizeActiveCaloriesData();
 }
 
 normalizeDiaryData();
@@ -110,11 +135,19 @@ function diaryMarkup(){
       <button id="nextDiaryDay" aria-label="Giorno successivo">›</button>
     </div>
     <section class="calorie-summary">
-      <span>CALORIE REGISTRATE</span>
+      <span>CALORIE ASSUNTE</span>
       <strong><span id="dailyCalories">0</span> kcal</strong>
-      <div class="calorie-meta"><span id="calorieGoalText">Obiettivo non impostato</span><span id="caloriePercent"></span></div>
+      <div class="calorie-meta"><span id="calorieGoalText">Obiettivo alimentare non impostato</span><span id="caloriePercent"></span></div>
       <div class="calorie-progress"><i id="calorieProgress"></i></div>
-      <button id="setCalorieGoal">Imposta obiettivo</button>
+      <button id="setCalorieGoal">Imposta obiettivo alimentare</button>
+    </section>
+    <section class="active-calories-summary">
+      <div class="active-calories-copy">
+        <span>CALORIE ATTIVE BRUCIATE</span>
+        <strong><span id="dailyActiveCalories">0</span> kcal</strong>
+        <small>Dato separato: non modifica l’obiettivo alimentare.</small>
+      </div>
+      <button type="button" id="setActiveCalories">Inserisci</button>
     </section>
     <div id="diaryMeals"></div>
     <button class="diary-add" id="addDiaryEntry">+ Aggiungi alimento</button>
@@ -151,6 +184,20 @@ function dialogMarkup(){
       <label class="field"><span>Kcal giornaliere</span><input id="calorieGoal" inputmode="numeric" placeholder="Facoltativo"></label>
       <button class="primary" type="submit">Salva obiettivo</button>
     </form>
+  </dialog>
+  <dialog id="activeCaloriesDialog">
+    <form class="dialog-card" id="activeCaloriesForm">
+      <div class="dialog-head">
+        <div><p class="eyebrow">ATTIVITÀ DEL GIORNO</p><h2>Calorie attive bruciate</h2></div>
+        <button type="button" id="closeActiveCalories" aria-label="Chiudi">×</button>
+      </div>
+      <p>Inserisci il valore “Energia attiva” indicato da Apple Watch, iPhone o un altro dispositivo.</p>
+      <p id="activeCaloriesDate" class="active-calories-date"></p>
+      <label class="field"><span>Kcal attive</span><input id="activeCaloriesInput" inputmode="decimal" maxlength="7" placeholder="Es. 450" required></label>
+      <p class="diary-disclaimer">Resta separato dalle calorie assunte e non cambia l’obiettivo. La web app non può leggere direttamente Apple Salute.</p>
+      <button class="primary" type="submit">Salva attività</button>
+      <button class="delete-entry hidden" type="button" id="clearActiveCalories">Azzera per questo giorno</button>
+    </form>
   </dialog>`;
 }
 
@@ -176,14 +223,17 @@ function renderDiary(){
   const total=entries.reduce((sum,entry)=>sum+(Number(entry.calories)||0),0);
   const goal=Number(diarySettings.calorieGoal)||0;
   const percent=goal?Math.round(total/goal*100):0;
+  const activeCalories=activeCaloriesForDate(key);
   $('diaryFullDate').textContent=new Intl.DateTimeFormat('it-IT',{day:'numeric',month:'long',year:'numeric'}).format(date);
   $('diaryDayName').textContent=new Intl.DateTimeFormat('it-IT',{weekday:'long'}).format(date);
   $('dailyCalories').textContent=new Intl.NumberFormat('it-IT',{maximumFractionDigits:1}).format(total);
-  $('calorieGoalText').textContent=goal?`${Math.max(goal-total,0).toLocaleString('it-IT',{maximumFractionDigits:1})} kcal rimanenti`:'Obiettivo non impostato';
+  $('dailyActiveCalories').textContent=new Intl.NumberFormat('it-IT',{maximumFractionDigits:1}).format(activeCalories);
+  $('setActiveCalories').textContent=activeCalories>0?'Modifica':'Inserisci';
+  $('calorieGoalText').textContent=goal?`${Math.max(goal-total,0).toLocaleString('it-IT',{maximumFractionDigits:1})} kcal rimanenti sull’obiettivo alimentare`:'Obiettivo alimentare non impostato';
   $('caloriePercent').textContent=goal?`${percent}% di ${goal.toLocaleString('it-IT')} kcal`:'';
   $('calorieProgress').style.width=goal?`${Math.min(percent,100)}%`:'0%';
   $('calorieProgress').classList.toggle('over',goal>0&&total>goal);
-  $('setCalorieGoal').textContent=goal?'Modifica obiettivo':'Imposta obiettivo';
+  $('setCalorieGoal').textContent=goal?'Modifica obiettivo alimentare':'Imposta obiettivo alimentare';
   $('diaryMeals').innerHTML=DIARY_MEALS.map(meal=>{
     const items=entries.filter(entry=>entry.meal===meal);
     const subtotal=items.reduce((sum,entry)=>sum+(Number(entry.calories)||0),0);
@@ -216,6 +266,15 @@ function openDiaryEntry(id=null,meal='Colazione'){
 }
 
 function closeDiaryDialog(){$('diaryDialog').close();$('diaryForm').reset()}
+
+function openActiveCaloriesDialog(){
+  const activeCalories=activeCaloriesForDate(diaryDateKey());
+  $('activeCaloriesInput').value=activeCalories>0?String(activeCalories).replace('.',','):'';
+  $('activeCaloriesDate').textContent=new Intl.DateTimeFormat('it-IT',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(diaryDate());
+  $('clearActiveCalories').classList.toggle('hidden',!(activeCalories>0));
+  $('activeCaloriesDialog').showModal();
+  setTimeout(()=>$('activeCaloriesInput').focus(),100);
+}
 
 $('previousDiaryDay').onclick=()=>{diaryOffset--;renderDiary()};
 $('nextDiaryDay').onclick=()=>{diaryOffset++;renderDiary()};
@@ -294,6 +353,30 @@ $('deleteDiaryEntry').onclick=()=>{
   }
 };
 
+$('setActiveCalories').onclick=openActiveCaloriesDialog;
+$('closeActiveCalories').onclick=()=>$('activeCaloriesDialog').close();
+$('activeCaloriesForm').onsubmit=event=>{
+  event.preventDefault();
+  const value=$('activeCaloriesInput').value.trim();
+  const calories=value?parseDiaryNumber(value):0;
+  if(value&&(!Number.isFinite(calories)||calories<0))return alert('Inserisci un numero valido di calorie attive.');
+  const key=diaryDateKey();
+  if(calories>0)activeCaloriesByDate[key]={calories:Math.round(calories*10)/10,updatedAt:Date.now(),source:'manual'};
+  else delete activeCaloriesByDate[key];
+  writeLocal(ACTIVE_CALORIES_KEY,activeCaloriesByDate);
+  $('activeCaloriesDialog').close();
+  renderDiary();
+};
+$('clearActiveCalories').onclick=()=>{
+  const key=diaryDateKey();
+  if(confirm('Azzerare le calorie attive per questo giorno?')){
+    delete activeCaloriesByDate[key];
+    writeLocal(ACTIVE_CALORIES_KEY,activeCaloriesByDate);
+    $('activeCaloriesDialog').close();
+    renderDiary();
+  }
+};
+
 $('setCalorieGoal').onclick=()=>{$('calorieGoal').value=diarySettings.calorieGoal||'';$('goalDialog').showModal()};
 $('closeGoal').onclick=()=>$('goalDialog').close();
 $('goalForm').onsubmit=event=>{
@@ -310,6 +393,8 @@ $('goalForm').onsubmit=event=>{
 $('diaryUnit').dataset.previousUnit='g';
 updateDiaryUnitInterface();
 renderDiary();
+
+
 
 
 
