@@ -2,7 +2,7 @@ document.querySelector('#infoDialog .dialog-card').insertAdjacentHTML('beforeend
 
 $('exportDiary').onclick=()=>{
   if(typeof normalizeDiaryData==='function')normalizeDiaryData();
-  const backup={app:'piano-alimentare',version:2,exportedAt:new Date().toISOString(),diaryEntries,foodCatalog,diarySettings};
+  const backup={app:'piano-alimentare',version:3,exportedAt:new Date().toISOString(),diaryEntries,foodCatalog,diarySettings,activeCaloriesByDate};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const link=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:`diario-alimentare-${diaryDateKey()}.json`});
   link.click();
@@ -19,14 +19,18 @@ $('importDiary').onchange=async event=>{
       diaryEntries=backup.diaryEntries;
       foodCatalog=backup.foodCatalog;
       diarySettings=backup.diarySettings&&typeof backup.diarySettings==='object'?backup.diarySettings:{calorieGoal:null};
+      if(Number(backup.version)>=3&&backup.activeCaloriesByDate&&typeof backup.activeCaloriesByDate==='object'&&!Array.isArray(backup.activeCaloriesByDate))activeCaloriesByDate=backup.activeCaloriesByDate;
       if(typeof normalizeDiaryData==='function')normalizeDiaryData();
       writeLocal(DIARY_KEY,diaryEntries);
       writeLocal(FOODS_KEY,foodCatalog);
       writeLocal(DIARY_SETTINGS_KEY,diarySettings);
+      writeLocal(ACTIVE_CALORIES_KEY,activeCaloriesByDate);
       $('infoDialog').close();
       renderDiary();
     }
   }catch{alert('Il file selezionato non è un backup valido del diario.')}
   event.target.value='';
 };
+
+
 
